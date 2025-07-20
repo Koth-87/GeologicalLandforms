@@ -1,10 +1,15 @@
 using System;
-using LunarFramework.Utility;
 using NodeEditorFramework;
-using RimWorld;
 using TerrainGraph;
 using UnityEngine;
 using Verse;
+
+#if RW_1_6_OR_GREATER
+using static GeologicalLandforms.TerrainPriority;
+#else
+using LunarFramework.Utility;
+using RimWorld;
+#endif
 
 namespace GeologicalLandforms.GraphEditor;
 
@@ -28,6 +33,8 @@ public class NodeTerrainGridNaturalPriority : NodeBase
 
     public PriorityOptions Options = new();
 
+    #if !RW_1_6_OR_GREATER
+
     public struct PriorityOptions
     {
         public bool PrioritizeWater = true;
@@ -36,6 +43,8 @@ public class NodeTerrainGridNaturalPriority : NodeBase
 
         public PriorityOptions() {}
     }
+
+    #endif
 
     public override void NodeGUI()
     {
@@ -54,9 +63,26 @@ public class NodeTerrainGridNaturalPriority : NodeBase
         InputBKnob.SetPosition();
 
         GUILayout.BeginVertical(GUI.skin.box);
+
         Options.PrioritizeWater = GUILayout.Toggle(Options.PrioritizeWater, "  Prioritize water");
+
+        #if RW_1_6_OR_GREATER
+        GUI.enabled = Options.PrioritizeWater;
+        Options.PrioritizeMovingWater = GUILayout.Toggle(Options.PrioritizeMovingWater, "  Prioritize moving water");
+        GUI.enabled = true;
+        #endif
+
         Options.PrioritizeIce = GUILayout.Toggle(Options.PrioritizeIce, "  Prioritize ice");
+
+        #if RW_1_6_OR_GREATER
+        Options.PrioritizeFertility = GUILayout.Toggle(Options.PrioritizeFertility, "  Prioritize fertility");
+        GUI.enabled = Options.PrioritizeFertility;
         Options.InvertFertility = GUILayout.Toggle(Options.InvertFertility, "  Invert fertility");
+        GUI.enabled = true;
+        #else
+        Options.InvertFertility = GUILayout.Toggle(Options.InvertFertility, "  Invert fertility");
+        #endif
+
         GUILayout.Space(3f);
         GUILayout.EndVertical();
 
@@ -69,8 +95,8 @@ public class NodeTerrainGridNaturalPriority : NodeBase
     public override bool Calculate()
     {
         OutputKnob.SetValue<ISupplier<IGridFunction<TerrainDef>>>(new Output(
-            SupplierOrFallback(InputBKnob, GridFunction.Of<TerrainDef>(null)),
             SupplierOrFallback(InputAKnob, GridFunction.Of<TerrainDef>(null)),
+            SupplierOrFallback(InputBKnob, GridFunction.Of<TerrainDef>(null)),
             Options
         ));
 
@@ -100,8 +126,8 @@ public class NodeTerrainGridNaturalPriority : NodeBase
 
         public void ResetState()
         {
-            _inputB.ResetState();
             _inputA.ResetState();
+            _inputB.ResetState();
         }
     }
 
@@ -126,30 +152,38 @@ public class NodeTerrainGridNaturalPriority : NodeBase
             var a = _inputA.ValueAt(x, z);
             var b = _inputB.ValueAt(x, z);
 
-            if (a == null) return b;
+            #if RW_1_6_OR_GREATER
+
+            return Apply(a, b, _options);
+
+            #else
+
             if (b == null) return a;
+            if (a == null) return b;
 
             if (_options.PrioritizeWater)
             {
-                if (a.IsDeepWater()) return a;
                 if (b.IsDeepWater()) return b;
+                if (a.IsDeepWater()) return a;
 
-                if (a == TerrainDefOf.WaterMovingChestDeep) return a;
                 if (b == TerrainDefOf.WaterMovingChestDeep) return b;
+                if (a == TerrainDefOf.WaterMovingChestDeep) return a;
 
-                if (a == TerrainDefOf.WaterShallow || a == TerrainDefOf.WaterOceanShallow) return a;
                 if (b == TerrainDefOf.WaterShallow || b == TerrainDefOf.WaterOceanShallow) return b;
+                if (a == TerrainDefOf.WaterShallow || a == TerrainDefOf.WaterOceanShallow) return a;
 
-                if (a.IsRiver) return a;
                 if (b.IsRiver) return b;
+                if (a.IsRiver) return a;
             }
 
             if (_options.PrioritizeIce)
             {
-                if (a == TerrainDefOf.Ice || b == TerrainDefOf.Ice) return TerrainDefOf.Ice;
+                if (b == TerrainDefOf.Ice || a == TerrainDefOf.Ice) return TerrainDefOf.Ice;
             }
 
-            return (a.fertility >= b.fertility) ^ _options.InvertFertility ? a : b;
+            return (b.fertility >= a.fertility) ^ _options.InvertFertility ? b : a;
+
+            #endif
         }
     }
 }

@@ -154,7 +154,7 @@ public class BiomeGrid : MapComponent
     private float GetOpenGroundFractionFor(IntVec3 cell, bool caveBiome, bool waterPassable)
     {
         var terrain = map.terrainGrid.TerrainAt(cell);
-        if (terrain.IsNormalWater()) return waterPassable ? 0.5f : 0.1f;
+        if (terrain.IsWater) return waterPassable ? 0.5f : 0.1f;
         if (!cell.Walkable(map)) return caveBiome ? 0.75f : 0.35f;
         if (!terrain.natural) return 0.4f;
         return 1f;

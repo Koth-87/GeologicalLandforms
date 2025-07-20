@@ -147,7 +147,7 @@ public class TileMutatorWorker_Landform : TileMutatorWorker
             }
 
             var tBase = baseFunction?.ValueAt(c.x, c.z);
-            var tResult = RiverTerrainPriority(tBase, tRiver);
+            var tResult = TerrainPriority.Apply(tBase, tRiver, TerrainPriority.DefaultOptions);
 
             if (stoneFunction != null && tResult == null)
             {
@@ -237,17 +237,6 @@ public class TileMutatorWorker_Landform : TileMutatorWorker
         }
 
         return null;
-    }
-
-    private TerrainDef RiverTerrainPriority(TerrainDef tBase, TerrainDef tRiver)
-    {
-        if (tRiver == null) return tBase;
-        if (tBase == null) return tRiver;
-        if (tBase.defName.Contains("Deep")) return tBase;
-        if (tRiver.defName.Contains("Deep")) return tRiver;
-        if (tBase.IsWater) return tBase;
-        if (tRiver.IsWater) return tRiver;
-        return tBase;
     }
 
     private void ApplyBuffered<T>(IntVec3 mapSize, Func<IntVec3, T> generator, Action<IntVec3, T> apply)
