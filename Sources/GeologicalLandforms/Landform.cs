@@ -285,7 +285,7 @@ public class Landform : TerrainCanvas
             def.ResolveDefNameHash();
         }
 
-        def.label ??= TranslatedName;
+        def.label ??= TranslatedNameForSelection;
 
         TileMutatorDef = def;
     }
