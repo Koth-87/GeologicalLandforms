@@ -32,6 +32,13 @@ internal class ModCompat_MapDesigner : ModCompat
         GeologicalLandformsAPI.LandformEnabled.AddModifier(99, (lf, val) =>
             val && (!_overrideGL || !lf.IsLayer || lf.LayerConfig.LayerId != "river"));
 
+        #if RW_1_6_OR_GREATER
+
+        GeologicalLandformsAPI.TileMutatorEnabled.AddModifier(99, (def, val) =>
+            val || (_overrideGL && def.modContentPack.IsOfficialMod && def.categories.Contains("River")));
+
+        #endif
+
         GeologicalLandformsAPI.WorldTileInfoHook.AddObserver(1, info =>
         {
             if (_overrideGL && info.Topology.IsCoast())
@@ -72,7 +79,14 @@ internal class ModCompat_MapDesigner : ModCompat
 
         Widgets.CheckboxLabeled(cbRect, "GeologicalLandforms.Integration.MapDesigner.RiverCardOverride".Translate(), ref _overrideGL);
 
-        if (pre != _overrideGL) MapPreviewAPI.NotifyWorldChanged();
+        if (pre != _overrideGL)
+        {
+            #if RW_1_6_OR_GREATER
+            TileMutatorsCustomization.RefreshCustomization();
+            #endif
+
+            MapPreviewAPI.NotifyWorldChanged();
+        }
 
         rect.yMin += 40f;
         return _overrideGL;
