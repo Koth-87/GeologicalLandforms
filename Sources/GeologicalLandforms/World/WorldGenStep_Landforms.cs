@@ -89,5 +89,10 @@ public class WorldGenStep_Landforms : WorldGenStep
         };
 
         DefGenerator.AddImpliedDef(def);
+
+        #if RW_1_6_OR_GREATER
+        PlanetLayerDefOf.Surface.worldGenSteps.Add(def);
+        PlanetLayerDefOf.Surface.cachedGenSteps = null;
+        #endif
     }
 }

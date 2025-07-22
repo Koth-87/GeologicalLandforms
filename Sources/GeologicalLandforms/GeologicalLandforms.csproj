@@ -79,5 +79,7 @@
         <Publicize Include="Assembly-CSharp:RimWorld.Planet.WorldSelector.selectedTile" />
         <Publicize Include="Assembly-CSharp:RimWorld.Planet.Tile.biome" />
         <Publicize Include="Assembly-CSharp:RimWorld.TileMutatorDef.mutatorWorker" />
+        <Publicize Include="Assembly-CSharp:RimWorld.PlanetLayerDef.worldGenSteps" />
+        <Publicize Include="Assembly-CSharp:RimWorld.PlanetLayerDef.cachedGenSteps" />
     </ItemGroup>
 </Project>
