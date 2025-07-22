@@ -78,10 +78,18 @@ public class NodeUIWorldTileReq : NodeUIBase
         return CheckWorldObject(worldTile) ? value : 0f;
     }
 
+    private static readonly List<string> IgnoredWorldObjects = [
+        #if RW_1_6_OR_GREATER
+        "Camp",
+        "AbandonedCamp"
+        #endif
+    ];
+
     public bool CheckWorldObject(IWorldTileInfo worldTile)
     {
         var worldObject = worldTile.WorldObject;
         if (worldObject == null || worldObject.Faction is { IsPlayer: true }) return true;
+        if (IgnoredWorldObjects.Contains(worldObject.def.defName)) return true;
         if (!AllowSettlements && worldObject is Settlement) return false;
         if (!AllowSites && worldObject is not Settlement) return false;
         return true;
