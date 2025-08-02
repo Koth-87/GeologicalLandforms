@@ -1,4 +1,12 @@
 
+v1.7.10
+
+- Fixed some landforms not generating when using Odyssey's caravan camp feature
+- Fixed outdated compatibility patch for Performance Optimizer in 1.6
+- Fixed performance issue on the world map when the "Terrain" tab is open
+- Fixed compatibility with the river settings from Map Designer
+- Fixed River Source landform no generating correctly in some biomes
+
 v1.7.9
 
 - Fixed coastal landforms not using ocean water terrain
