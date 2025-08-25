@@ -41,6 +41,26 @@ internal static class Patch_RimWorld_WorldPathGrid
     }
 
     #if RW_1_6_OR_GREATER
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(WorldPathGrid.CalculatedMovementDifficultyAt))]
+    [HarmonyPriority(Priority.First)]
+    private static void CalculatedMovementDifficultyAt_Prefix()
+    {
+        TileMutatorsCustomization.SkipLandforms = true;
+    }
+
+    [HarmonyFinalizer]
+    [HarmonyPatch(nameof(WorldPathGrid.CalculatedMovementDifficultyAt))]
+    [HarmonyPriority(Priority.Last)]
+    private static void CalculatedMovementDifficultyAt_Finalizer()
+    {
+        TileMutatorsCustomization.SkipLandforms = false;
+    }
+
+    #endif
+
+    #if RW_1_6_OR_GREATER
     private static bool ShouldTileBePassable(PlanetTile tile)
     #else
     private static bool ShouldTileBePassable(int tile)

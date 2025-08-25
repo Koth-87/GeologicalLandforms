@@ -10,15 +10,23 @@ internal static class Patch_RimWorld_WorldObjectsHolder
 {
     [HarmonyPostfix]
     [HarmonyPatch(nameof(WorldObjectsHolder.Add))]
-    private static void Add_Postfix()
+    private static void Add_Postfix(WorldObject o)
     {
-        WorldTileInfo.InvalidateCache();
+        #if RW_1_6_OR_GREATER
+        if (!o.Tile.Layer.IsRootSurface) return;
+        #endif
+
+        WorldTileInfo.InvalidateCache(o.Tile.tileId);
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(WorldObjectsHolder.Remove))]
-    private static void Remove_Postfix()
+    private static void Remove_Postfix(WorldObject o)
     {
-        WorldTileInfo.InvalidateCache();
+        #if RW_1_6_OR_GREATER
+        if (!o.Tile.Layer.IsRootSurface) return;
+        #endif
+
+        WorldTileInfo.InvalidateCache(o.Tile.tileId);
     }
 }

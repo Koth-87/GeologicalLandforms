@@ -53,7 +53,7 @@ public class NodeUIWorldTileReq : NodeUIBase
         foreach (var condition in Conditions) condition.Reset(this, false);
     }
 
-    public float GetCommonnessForTile(IWorldTileInfo worldTile, bool lenient)
+    public float GetCommonnessForTile(IWorldTileInfo worldTile, MapParent worldObject, bool lenient)
     {
         var value = Commonness;
 
@@ -75,7 +75,7 @@ public class NodeUIWorldTileReq : NodeUIBase
 
         #endif
 
-        return CheckWorldObject(worldTile) ? value : 0f;
+        return CheckWorldObject(worldObject) ? value : 0f;
     }
 
     private static readonly List<string> IgnoredWorldObjects = [
@@ -85,9 +85,8 @@ public class NodeUIWorldTileReq : NodeUIBase
         #endif
     ];
 
-    public bool CheckWorldObject(IWorldTileInfo worldTile)
+    public bool CheckWorldObject(MapParent worldObject)
     {
-        var worldObject = worldTile.WorldObject;
         if (worldObject == null || worldObject.Faction is { IsPlayer: true }) return true;
         if (IgnoredWorldObjects.Contains(worldObject.def.defName)) return true;
         if (!AllowSettlements && worldObject is Settlement) return false;

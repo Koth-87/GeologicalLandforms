@@ -187,6 +187,20 @@ public class WorldTileInfo : IWorldTileInfo
         #endif
     }
 
+    public static void InvalidateCache(int tileId)
+    {
+        var cache = _cache;
+
+        if (cache != null && tileId >= 0 && tileId <= cache.Length - 1)
+        {
+            cache[tileId] = null;
+
+            #if RW_1_6_OR_GREATER
+            TileMutatorsCustomization.TileHasChanged(tileId);
+            #endif
+        }
+    }
+
     public static void CreateNewCache()
     {
         InvalidateCache();
@@ -213,6 +227,7 @@ public class WorldTileInfo : IWorldTileInfo
     {
         var eligible = _tsc_eligible;
         var commonness = _tsc_commonness;
+        var worldObject = info.WorldObject;
 
         List<Landform> landforms = null;
 
@@ -245,7 +260,7 @@ public class WorldTileInfo : IWorldTileInfo
 
                 foreach (var landform in layer.Landforms)
                 {
-                    var value = landform.GetCommonnessForTile(info);
+                    var value = landform.GetCommonnessForTile(info, worldObject);
                     if (value > 0f && biomeProps.AllowsLandform(landform))
                     {
                         eligible.Add(landform);

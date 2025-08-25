@@ -19,6 +19,9 @@ public static class TileMutatorsCustomization
 
     public static bool Enabled => _cache != null;
 
+    [ThreadStatic]
+    internal static bool SkipLandforms;
+
     public static bool IsTileMutatorDisabled(TileMutatorDef def)
     {
         return _disabledMutators.Contains(def);
@@ -58,13 +61,16 @@ public static class TileMutatorsCustomization
             return fromCache;
 
         var fresh = BuildFresh(tileId, original);
-        cache[tileId] = fresh;
+
+        if (!SkipLandforms)
+            cache[tileId] = fresh;
+
         return fresh;
     }
 
     public static IList<TileMutatorDef> BuildFresh(int tileId, IList<TileMutatorDef> original)
     {
-        var tileInfo = WorldTileInfo.Get(tileId);
+        var tileInfo = SkipLandforms ? null : WorldTileInfo.Get(tileId);
 
         List<TileMutatorDef> mutators = null;
 
@@ -80,7 +86,7 @@ public static class TileMutatorsCustomization
             }
         }
 
-        if (tileInfo.Landforms != null)
+        if (tileInfo?.Landforms != null)
         {
             mutators ??= [];
 

@@ -4,6 +4,7 @@ using System.Linq;
 using MapPreview;
 using NodeEditorFramework;
 using RimWorld;
+using RimWorld.Planet;
 using TerrainGraph;
 using TerrainGraph.Util;
 using UnityEngine;
@@ -113,7 +114,7 @@ public class Landform : TerrainCanvas
 
         foreach (var landform in landforms)
         {
-            if (landform.WorldTileReq == null || landform.WorldTileReq.CheckWorldObject(tileInfo))
+            if (landform.WorldTileReq == null || landform.WorldTileReq.CheckWorldObject(tileInfo.WorldObject))
             {
                 landform.RandSeed = seed;
                 landform.ClearNamedInputs();
@@ -166,9 +167,9 @@ public class Landform : TerrainCanvas
         return gridInMapSpace == null ? null : new GridFunction.Transform<T>(gridInMapSpace, MapSpaceToNodeSpaceFactor);
     }
 
-    public float GetCommonnessForTile(IWorldTileInfo tile, bool lenient = false)
+    public float GetCommonnessForTile(IWorldTileInfo tile, MapParent worldObject, bool lenient = false)
     {
-        return WorldTileReq == null ? 0f : WorldTileReq.GetCommonnessForTile(tile, lenient);
+        return WorldTileReq == null ? 0f : WorldTileReq.GetCommonnessForTile(tile, worldObject, lenient);
     }
 
     protected override void ValidateSelf()
