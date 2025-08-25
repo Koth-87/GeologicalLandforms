@@ -13,6 +13,11 @@ public class ModCompat_RimWar : ModCompat
     public override string TargetAssemblyName => "RimWar";
     public override string DisplayName => "RimWar";
 
+    protected override bool OnApply()
+    {
+        return AccessTools.TypeByName("RimWar.WorldReachability_CanReach_Patch") != null;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch("RimWar.WorldReachability_CanReach_Patch", "Prefix")]
     private static bool WorldReachability_CanReach_Patch(ref bool __result)
