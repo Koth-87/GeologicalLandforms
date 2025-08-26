@@ -1,4 +1,10 @@
 
+v1.7.11
+
+- Added compatibility patch for 'Roads Of The Rim'
+- Fixed lag spike (once per in-game day) when 'Alpha Biomes' is present
+- Fixed compatibility patch for 'RimWar' in 1.6
+
 v1.7.10
 
 - Fixed some landforms not generating when using Odyssey's caravan camp feature
